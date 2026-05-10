@@ -1,0 +1,14 @@
+
+Phase 1: Rocket Engine Calculator
+Phase 2: Nozzle Module
+Phase 3: Combustion Model
+Phase 4: Feed System
+Phase 5: Thermal Module
+Phase 6: Full Engine Iteration Tool
+
+🛰️ Mission Overview
+Mission type: Small satellite launch (LEO)
+Payload mass: 300 kg
+Target orbit: 500 km circular Low Earth Orbit
+Launch site: Europe (mid-latitude)
+Target inclination: ~97° (sun-synchronous orbit)
