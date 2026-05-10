@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pypropulsion"
+version = "0.1.0"
+description = "Rocket propulsion engineering framework"
+authors = [
+    {name = "Yash Mandaokar"}
+]
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.setuptools.packages.find]
+where = ["src"]
