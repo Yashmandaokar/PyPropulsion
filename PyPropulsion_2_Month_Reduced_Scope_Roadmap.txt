@@ -1,0 +1,562 @@
+PyPropulsion — Two-Month Reduced-Scope Roadmap
+================================================
+
+Project Goal
+------------
+Build a modular preliminary liquid rocket engine design toolkit in Python.
+
+The tool should take simplified mission-level requirements, estimate the required mission delta-V, recommend a rough launch vehicle architecture, suggest suitable propellant options, and then perform first-order engine sizing, combustion-property estimation using Cantera, nozzle performance analysis, simplified feed-system sizing, and simplified thermal checks.
+
+This is not intended to be a high-fidelity trajectory optimizer or full rocket engine design code. It is intended to be a professional, well-documented, modular engineering portfolio project.
+
+
+Main User Workflow
+------------------
+The intended final user workflow is:
+
+1. User enters mission requirements.
+2. Mission module estimates required delta-V and recommends number of stages.
+3. Propellant-selection module suggests suitable propellant combinations.
+4. User selects a propellant pair, or accepts the default recommendation.
+5. Engine calculator estimates thrust, mass flow, burn time, propellant split, and propellant mass.
+6. Cantera combustion module estimates chamber gas properties.
+7. Nozzle module estimates throat area, exit conditions, expansion ratio, and ideal performance.
+8. Feed-system module estimates pressure requirements or pump power.
+9. Thermal module estimates rough heat flux and wall-temperature risk.
+10. Integrated report summarizes the preliminary engine design.
+
+
+Recommended Reduced-Scope Phases
+================================
+
+Phase 0 — Mission Requirement and Architecture Module
+-----------------------------------------------------
+Purpose:
+Convert mission-level requirements into approximate vehicle and engine-level design targets.
+
+Inputs:
+- Payload mass [kg]
+- Target orbit altitude [m]
+- Target inclination [deg]
+- Mission type, e.g. LEO, SSO, GTO
+- Launch site or launch-site latitude
+- Optional user-selected propellant family
+
+Core calculations:
+- Circular orbital velocity
+- Approximate delta-V budget
+- Gravity-loss estimate
+- Drag-loss estimate
+- Steering/inclination-loss estimate, if simplified
+- Total mission delta-V estimate
+- Rule-based stage-count recommendation
+- Rough thrust-class recommendation
+
+Simplified assumptions:
+- No full trajectory simulation
+- No launch azimuth optimization
+- No detailed aerodynamic loss model
+- Losses are estimated using engineering rules of thumb
+
+Example code output:
+
+Mission Analysis Summary
+------------------------
+Payload mass: 300.00 kg
+Target orbit altitude: 500.00 km
+Target inclination: 97.00 deg
+Mission type: SSO
+Estimated circular orbital velocity: 7616.00 m/s
+Estimated losses: 1700.00 m/s
+Estimated total delta-V: 9316.00 m/s
+Recommended number of stages: 2
+Recommended architecture: Two-stage small launch vehicle
+Suggested propellants: LOX-CH4, LOX-RP1, LOX-LH2 upper stage
+Default recommendation: LOX-CH4
+
+Estimated time:
+1 week
+
+
+Phase 1 — Rocket Engine Calculator
+----------------------------------
+Purpose:
+Convert engine-level requirements into first-order engine sizing quantities.
+
+Inputs:
+- Required thrust [N]
+- Specific impulse estimate [s]
+- Burn time [s]
+- Mixture ratio O/F [-]
+- Chamber pressure [Pa]
+- Ambient pressure [Pa]
+- Number of engines
+
+Core calculations:
+- Effective exhaust velocity
+- Total mass flow rate
+- Oxidizer mass flow rate
+- Fuel mass flow rate
+- Total propellant mass
+- Propellant mass per engine
+- Basic performance summary
+
+Simplified assumptions:
+- Specific impulse may be user-defined or estimated from propellant selection
+- No detailed nozzle calculation yet
+- No combustion chemistry yet
+
+Example code output:
+
+Phase 1 Engine Sizing Summary
+-----------------------------
+Required thrust: 400000.00 N
+Specific impulse: 280.00 s
+Effective exhaust velocity: 2745.86 m/s
+Total mass flow rate: 145.67 kg/s
+Oxidizer mass flow rate: 105.21 kg/s
+Fuel mass flow rate: 40.46 kg/s
+Burn time: 150.00 s
+Total propellant mass: 21851.10 kg
+Mixture ratio O/F: 2.60
+
+Estimated time:
+1 week
+
+
+Phase 2 — Nozzle Module
+-----------------------
+Purpose:
+Estimate ideal nozzle performance and geometry using quasi-1D compressible-flow relations.
+
+Inputs:
+- Chamber pressure [Pa]
+- Chamber temperature [K]
+- Specific heat ratio gamma [-]
+- Gas constant [J/kg/K]
+- Mass flow rate [kg/s]
+- Ambient pressure [Pa]
+- Desired expansion ratio, or exit pressure target
+
+Core calculations:
+- Choked-flow throat area
+- Throat diameter
+- Exit Mach number
+- Exit pressure
+- Exit temperature
+- Exit velocity
+- Expansion ratio
+- Exit area
+- Exit diameter
+- Thrust coefficient
+- Ideal vacuum and sea-level thrust
+- Ideal specific impulse
+
+Simplified assumptions:
+- Quasi-1D isentropic flow
+- Constant gamma
+- No boundary-layer losses
+- No nozzle separation model except simple warning
+- No bell contour optimization
+
+Example code output:
+
+Nozzle Analysis Summary
+-----------------------
+Chamber pressure: 80.00 bar
+Chamber temperature: 3550.00 K
+Gamma: 1.22
+Gas constant: 355.00 J/kg/K
+Mass flow rate: 145.67 kg/s
+Throat area: 0.052 m^2
+Throat diameter: 0.258 m
+Expansion ratio: 15.00
+Exit area: 0.780 m^2
+Exit diameter: 0.997 m
+Exit Mach number: 3.20
+Exit pressure: 0.92 bar
+Exit velocity: 2850.00 m/s
+Estimated sea-level Isp: 285.00 s
+Estimated vacuum Isp: 310.00 s
+Expansion status: near sea-level optimized
+
+Estimated time:
+1 to 2 weeks
+
+
+Phase 3 — Cantera Combustion Module
+-----------------------------------
+Purpose:
+Use Cantera to estimate equilibrium combustion properties for selected propellant pairs.
+
+Recommended first propellant pairs:
+- LOX-CH4
+- LOX-H2
+
+Optional later surrogate:
+- LOX-RP1 approximated using a hydrocarbon surrogate such as dodecane, if mechanism support is available
+
+Inputs:
+- Fuel species, e.g. CH4
+- Oxidizer species, e.g. O2
+- Chamber pressure [Pa]
+- Initial reactant temperature [K]
+- Equivalence ratio or mixture ratio
+- Cantera mechanism file, e.g. gri30.yaml for methane-air/oxygen examples
+
+Core calculations:
+- Adiabatic flame temperature using equilibrium HP calculation
+- Equilibrium product composition
+- Mixture molecular weight
+- Specific heat at constant pressure
+- Specific heat at constant volume
+- Specific heat ratio gamma
+- Gas constant of combustion products
+- Optional characteristic velocity estimate if implemented
+
+Simplified assumptions:
+- Equilibrium combustion only
+- No finite-rate flame simulation
+- No injector atomization
+- No chamber residence-time model
+- No combustion instability model
+
+Example code output:
+
+Cantera Combustion Summary
+--------------------------
+Propellant pair: LOX-CH4
+Chamber pressure: 80.00 bar
+Equivalence ratio: 1.00
+Initial temperature: 298.15 K
+Adiabatic flame temperature: 3580.00 K
+Mean molecular weight: 22.40 kg/kmol
+Gas constant: 371.15 J/kg/K
+cp: 4200.00 J/kg/K
+cv: 3450.00 J/kg/K
+Gamma: 1.217
+Major products: H2O, CO2, CO, H2, O2
+
+Estimated time:
+1 to 2 weeks
+
+
+Phase 4 — Simplified Feed-System Module
+---------------------------------------
+Purpose:
+Estimate basic feed-system requirements for delivering propellant to the chamber.
+
+Inputs:
+- Chamber pressure [Pa]
+- Injector pressure-drop fraction [-]
+- Feed-line pressure-drop estimate [Pa]
+- Oxidizer mass flow rate [kg/s]
+- Fuel mass flow rate [kg/s]
+- Oxidizer density [kg/m^3]
+- Fuel density [kg/m^3]
+- Pump efficiency or pressure-fed tank margin
+
+Core calculations:
+- Injector pressure drop
+- Required upstream pressure
+- Required pump pressure rise
+- Oxidizer pump power
+- Fuel pump power
+- Approximate tank volume
+- Approximate propellant volume
+
+Simplified assumptions:
+- Steady flow
+- No detailed piping network
+- No cavitation/NPSH model in first version
+- No turbopump turbine design
+- No transient tank pressurization
+
+Example code output:
+
+Feed System Summary
+-------------------
+Chamber pressure: 80.00 bar
+Injector pressure drop fraction: 0.20
+Injector pressure drop: 16.00 bar
+Estimated feed-line losses: 2.00 bar
+Required upstream pressure: 98.00 bar
+Oxidizer flow rate: 105.21 kg/s
+Fuel flow rate: 40.46 kg/s
+Oxidizer pump power: 0.95 MW
+Fuel pump power: 0.42 MW
+Total estimated pump power: 1.37 MW
+Approximate oxidizer volume: 16.0 m^3
+Approximate fuel volume: 13.5 m^3
+
+Estimated time:
+1 week
+
+
+Phase 5 — Simplified Thermal Module
+-----------------------------------
+Purpose:
+Estimate first-order thermal loading and wall-temperature risk.
+
+Inputs:
+- Chamber pressure [Pa]
+- Chamber temperature [K]
+- Gas properties from combustion module
+- Throat diameter [m]
+- Wall thickness [m]
+- Wall thermal conductivity [W/m/K]
+- Coolant temperature [K]
+- Coolant-side heat-transfer coefficient [W/m^2/K]
+
+Core calculations:
+- Approximate gas-side heat-transfer coefficient
+- Approximate heat flux near chamber/throat
+- 1D wall conduction temperature drop
+- Coolant-side heat-transfer estimate
+- Rough wall-temperature estimate
+- Thermal warning if wall temperature exceeds limit
+
+Possible model:
+- Start with simplified 1D thermal-resistance model
+- Optionally add Bartz-type heat-transfer estimate later
+
+Simplified assumptions:
+- Steady-state thermal model
+- No full regenerative cooling-channel network
+- No structural stress model
+- No material creep/fatigue model
+- No transient startup heating
+
+Example code output:
+
+Thermal Risk Summary
+--------------------
+Estimated gas-side heat-transfer coefficient: 15000 W/m^2/K
+Estimated heat flux: 25.0 MW/m^2
+Wall thickness: 1.5 mm
+Wall thermal conductivity: 320 W/m/K
+Estimated hot-wall temperature: 850 K
+Estimated coolant temperature rise: 70 K
+Material limit: 1000 K
+Thermal status: acceptable preliminary margin
+Warning: high heat flux near throat; regenerative cooling required
+
+Estimated time:
+1 week
+
+
+Phase 6 — Integrated Preliminary Engine Report
+----------------------------------------------
+Purpose:
+Connect all modules and generate one complete preliminary design summary.
+
+Inputs:
+- MissionRequirement object
+- Optional user-selected propellant
+- Optional user-selected engine thrust, chamber pressure, mixture ratio, and burn time
+- Default assumptions if values are missing
+
+Core workflow:
+1. Analyze mission
+2. Estimate delta-V
+3. Recommend stage count
+4. Suggest propellant options
+5. Create preliminary engine requirement
+6. Run Phase 1 engine sizing
+7. Run Cantera combustion analysis
+8. Run nozzle analysis
+9. Run feed-system estimate
+10. Run thermal estimate
+11. Generate final report
+
+Example code output:
+
+Integrated PyPropulsion Report
+==============================
+
+Mission
+-------
+Payload: 300 kg
+Target orbit: 500 km SSO
+Estimated delta-V: 9.32 km/s
+Recommended stages: 2
+
+Architecture
+------------
+Recommended vehicle type: Two-stage small launch vehicle
+Recommended propellant: LOX-CH4
+Engine class: booster-class engine
+Number of engines: 1 to 4 candidate range
+
+Engine Sizing
+-------------
+Thrust: 400 kN
+Isp estimate: 280 s
+Mass flow rate: 145.67 kg/s
+Oxidizer flow: 105.21 kg/s
+Fuel flow: 40.46 kg/s
+Total propellant mass: 21851.10 kg
+
+Combustion
+----------
+Adiabatic flame temperature: 3580 K
+Gamma: 1.217
+Molecular weight: 22.40 kg/kmol
+Gas constant: 371.15 J/kg/K
+
+Nozzle
+------
+Throat diameter: 0.258 m
+Exit diameter: 0.997 m
+Expansion ratio: 15.0
+Exit Mach number: 3.20
+Estimated sea-level Isp: 285 s
+Estimated vacuum Isp: 310 s
+
+Feed System
+-----------
+Required upstream pressure: 98 bar
+Estimated pump power: 1.37 MW
+
+Thermal
+-------
+Estimated heat flux: 25 MW/m^2
+Estimated hot-wall temperature: 850 K
+Thermal status: preliminary acceptable margin
+
+Warnings
+--------
+- Results are preliminary and assumption-dependent.
+- No full trajectory simulation included.
+- No injector design included.
+- Cantera equilibrium does not represent finite-rate chamber combustion.
+- No detailed regenerative cooling design included.
+
+Estimated time:
+1 week
+
+
+Two-Month Schedule
+==================
+
+Week 1:
+- Finish mission module skeleton
+- Implement orbital velocity
+- Implement simple delta-V estimate
+- Implement stage-count recommendation
+- Add tests and examples
+
+Week 2:
+- Improve Phase 1 engine calculator
+- Add structured input/output dataclasses
+- Add example engine-sizing report
+- Add tests
+
+Week 3:
+- Implement nozzle module
+- Add isentropic relations
+- Add throat and expansion-ratio calculations
+- Add nozzle tests
+
+Week 4:
+- Continue nozzle module
+- Add nozzle example studies
+- Add simple plots
+- Add documentation
+
+Week 5:
+- Add Cantera combustion module
+- Start with LOX-CH4 equilibrium
+- Extract temperature, gamma, molecular weight, gas constant
+- Add tests with reasonable expected ranges
+
+Week 6:
+- Add feed-system module
+- Add simplified pressure budget
+- Add pump-power estimate
+- Add propellant volume estimate
+
+Week 7:
+- Add simplified thermal module
+- Add heat-flux and wall-temperature estimates
+- Add warnings and sanity checks
+
+Week 8:
+- Build integrated report
+- Add final example case: 300 kg payload to 500 km SSO
+- Polish README
+- Add documentation
+- Add validation/sanity-check report
+- Clean GitHub repo for portfolio use
+
+
+What This Project Should Not Include in Two Months
+==================================================
+
+Do not include:
+- Full 6-DOF trajectory simulation
+- Full launch vehicle mass optimization
+- Detailed injector atomization model
+- Detailed turbopump design
+- Full finite-rate combustion simulation
+- Combustion instability prediction
+- Full regenerative cooling-channel design
+- Structural FEM
+- CFD coupling
+- GUI/web dashboard unless everything else is already stable
+
+These can be listed as future work.
+
+
+Recommended Final GitHub Positioning
+====================================
+
+Repository title:
+PyPropulsion
+
+Short description:
+A modular Python toolkit for preliminary liquid rocket engine design and mission-driven propulsion analysis.
+
+Portfolio framing:
+This project demonstrates a structured preliminary propulsion design workflow, including mission-level delta-V estimation, rocket engine sizing, Cantera-based combustion-property estimation, nozzle analysis, feed-system sizing, and simplified thermal checks.
+
+Core skills demonstrated:
+- Rocket propulsion
+- Orbital mechanics basics
+- Thermodynamics
+- Combustion modeling with Cantera
+- Compressible flow
+- Heat transfer
+- Engineering software architecture
+- Python package development
+- Git/GitHub workflow
+- Testing with pytest
+- Scientific documentation
+
+
+Minimum Successful Final Version
+================================
+
+A successful two-month version should be able to run one full example:
+
+Mission:
+- Payload: 300 kg
+- Orbit: 500 km circular SSO
+- Inclination: 97 deg
+- Launch region: Europe
+
+Tool output:
+- Estimated delta-V
+- Recommended number of stages
+- Recommended propellant options
+- Selected propellant pair
+- Engine thrust requirement
+- Mass flow rates
+- Propellant masses
+- Cantera chamber properties
+- Nozzle throat and exit estimates
+- Feed-system pressure and pump estimates
+- Thermal heat-flux and wall-temperature risk
+- Final integrated preliminary design report
+
+This is realistic, impressive, and achievable in two months if the scope remains disciplined.

@@ -1,0 +1,78 @@
+REALISTIC TIME ESTIMATE
+
+Now THIS becomes realistic and very strong.
+
+PHASE 1 — PyPropulsion
+Duration:
+✅ 2 months
+
+Includes:
+
+mission
+engine sizing
+nozzle
+Cantera combustion
+feed system
+thermal
+
+Output:
+
+preliminary launch vehicle
+PHASE 2 — PyCompressible
+Duration:
+✅ 1–1.5 months
+
+Includes:
+
+shocks
+expansions
+nozzle flow
+MOC basics
+feed duct compressible flow
+
+Connected to:
+
+nozzle
+external ascent flow
+PHASE 3 — PyHypersonics
+Duration:
+✅ 1.5–2 months
+
+Includes:
+
+atmosphere
+trajectory
+re-entry
+heating
+ballistic coefficient
+lift/drag histories
+
+Connected to:
+
+reusable first stage
+PHASE 4 — PyAerodynamics
+Duration:
+✅ 1–1.5 months
+
+Includes:
+
+thin airfoil
+panel methods
+stability
+trim
+fin sizing
+
+Connected to:
+
+same vehicle
+PHASE 5 — PyTurbo
+Duration:
+✅ 1–1.5 months
+
+Includes:
+
+turbopump analysis
+cycle analysis
+mean-line calculations
+
+Connected to:
